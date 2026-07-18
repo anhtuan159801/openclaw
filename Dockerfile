@@ -13,9 +13,9 @@ ARG OPENCLAW_BUNDLED_PLUGIN_DIR=extensions
 ARG OPENCLAW_DOCKER_BUILD_NODE_OPTIONS="--max-old-space-size=8192"
 ARG OPENCLAW_DOCKER_BUILD_TSDOWN_MAX_OLD_SPACE_MB=""
 ARG OPENCLAW_DOCKER_BUILD_SKIP_DTS=1
-ARG OPENCLAW_NODE_BOOKWORM_IMAGE="docker.io/library/node:24-bookworm@sha256:8530f76a96d88820d288761f022e318970dda93d01536919fbc16076b7983e63"
-ARG OPENCLAW_NODE_BOOKWORM_SLIM_IMAGE="docker.io/library/node:24-bookworm-slim@sha256:242549cd46785b480c832479a730f4f2a20865d61ea2e404fdb2a5c3d3b73ecf"
-ARG OPENCLAW_NODE_BOOKWORM_SLIM_DIGEST="sha256:242549cd46785b480c832479a730f4f2a20865d61ea2e404fdb2a5c3d3b73ecf"
+ARG OPENCLAW_NODE_BOOKWORM_IMAGE="docker.io/library/node:22.23.1-bookworm@sha256:a25c9934ff6382cd4f08b6bc26c82bf4ea69b1e6f8dabfb2ead457374127c365"
+ARG OPENCLAW_NODE_BOOKWORM_SLIM_IMAGE="docker.io/library/node:22.23.1-bookworm-slim@sha256:6c74791e557ce11fc957704f6d4fe134a7bc8d6f5ca4403205b2966bd488f6b3"
+ARG OPENCLAW_NODE_BOOKWORM_SLIM_DIGEST="sha256:6c74791e557ce11fc957704f6d4fe134a7bc8d6f5ca4403205b2966bd488f6b3"
 # Keep in sync with .github/actions/setup-node-env/action.yml bun-version.
 # To update: docker buildx imagetools inspect docker.io/oven/bun:<version> and use the manifest-list digest.
 ARG OPENCLAW_BUN_IMAGE="docker.io/oven/bun:1.3.13@sha256:87416c977a612a204eb54ab9f3927023c2a3c971f4f345a01da08ea6262ae30e"
@@ -23,8 +23,8 @@ ARG OPENCLAW_BUN_IMAGE="docker.io/oven/bun:1.3.13@sha256:87416c977a612a204eb54ab
 # Base images are pinned to SHA256 digests for reproducible builds.
 # Dependabot refreshes these blessed digests; release builds consume the
 # reviewed base snapshot instead of mutating distro state on every build.
-# To update, run: docker buildx imagetools inspect docker.io/library/node:24-bookworm and
-# docker.io/library/node:24-bookworm-slim (or podman) and replace the digests below with the
+# To update, run: docker buildx imagetools inspect docker.io/library/node:22.23.1-bookworm and
+# docker.io/library/node:22.23.1-bookworm-slim (or podman) and replace the digests below with the
 # current multi-arch manifest list entries.
 
 FROM ${OPENCLAW_NODE_BOOKWORM_IMAGE} AS workspace-deps
@@ -191,7 +191,7 @@ RUN --mount=type=cache,id=openclaw-pnpm-store,target=/root/.local/share/pnpm/sto
 # ── Runtime base image ──────────────────────────────────────────
 FROM ${OPENCLAW_NODE_BOOKWORM_SLIM_IMAGE} AS base-runtime
 ARG OPENCLAW_NODE_BOOKWORM_SLIM_DIGEST
-LABEL org.opencontainers.image.base.name="docker.io/library/node:24-bookworm-slim" \
+LABEL org.opencontainers.image.base.name="docker.io/library/node:22.23.1-bookworm-slim" \
   org.opencontainers.image.base.digest="${OPENCLAW_NODE_BOOKWORM_SLIM_DIGEST}"
 
 # ── Stage 3: Runtime ────────────────────────────────────────────
@@ -358,7 +358,7 @@ RUN install -d -m 0755 -o node -g node /home/node/.config && \
 ENV NODE_ENV=production
 
 # Security hardening: Run as non-root user
-# The node:24-bookworm image includes a 'node' user (uid 1000)
+# The node:22.23.1-bookworm image includes a 'node' user (uid 1000)
 # This reduces the attack surface by preventing container escape via root privileges
 USER node
 
